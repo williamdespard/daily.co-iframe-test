@@ -18,8 +18,8 @@ function App() {
         top: 0,
         left: 0,
         width: "0%",
-        height: "0%",
-      },
+        height: "0%"
+      }
     });
     const localObj = DailyIframe.createCallObject();
 
@@ -28,58 +28,72 @@ function App() {
   }, []);
 
   // join global channel after initialization
-  useEffect(() => {
-    (async () => {
-      if (globalCallObject) {
-        await globalCallObject.join({
-          url: "https://example-embryo.daily.co/global",
-          // videoOff audioOn token (these are generated from https://docs.daily.co/reference#create-meeting-token):
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1ZCI6IjEiLCJ2byI6dHJ1ZSwiYW8iOmZhbHNlLCJkIjoiOGMxZWIyYTMtMzYzMy00NTQ2LWI2YjAtYjk3NGFiYmJmNTA3IiwiaWF0IjoxNTkzMTczODI3fQ.GIuHX2ALwAU2bDMCO2BcnN1Y4eeEUxgiZTaAoceVSy0",
+  useEffect(
+    () => {
+      (async () => {
+        if (globalCallObject) {
+          await globalCallObject.join({
+            url: "https://example-embryo.daily.co/global",
 
-          // videoOff audioOff token (This is working)
-          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1ZCI6IjEiLCJ2byI6dHJ1ZSwiYW8iOnRydWUsImQiOiI4YzFlYjJhMy0zNjMzLTQ1NDYtYjZiMC1iOTc0YWJiYmY1MDciLCJpYXQiOjE1OTMxNzM3MjF9.aYRGQfEVLJzbn46HNglusDqIxwjEhcX3JNu4PB9TZT8"
-          token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1ZCI6IjEiLCJ2byI6dHJ1ZSwiYW8iOmZhbHNlLCJkIjoiOGMxZWIyYTMtMzYzMy00NTQ2LWI2YjAtYjk3NGFiYmJmNTA3IiwiaWF0IjoxNTkzMTczODI3fQ.GIuHX2ALwAU2bDMCO2BcnN1Y4eeEUxgiZTaAoceVSy0",
-        });
-      }
-    })();
-    return () => {
-      if (globalCallObject) {
-        globalCallObject.leave();
-      }
-    };
-  }, [globalCallObject]);
+            // start_video_off: true, start_audio_off: false (NOT WORKING)
+            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2byI6dHJ1ZSwiYW8iOmZhbHNlLCJkIjoiOGMxZWIyYTMtMzYzMy00NTQ2LWI2YjAtYjk3NGFiYmJmNTA3IiwiaWF0IjoxNTkzMTg0NDg2fQ.yPV343dGTSldJ_Jv36KxVHcMM0nhavCpFJ2PILLRQdg
+
+            // start_video_off: true, start_audio_off: true (WORKING)
+            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2byI6dHJ1ZSwiYW8iOnRydWUsImQiOiI4YzFlYjJhMy0zNjMzLTQ1NDYtYjZiMC1iOTc0YWJiYmY1MDciLCJpYXQiOjE1OTMxODQyNzd9.xdp0oJ7Da0r_4cLNkYTuRkZ8_gWVItgPddYrm7zKyKY
+
+            // start_video_off: false, start_audio_off: true (WORKING)
+            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2byI6ZmFsc2UsImFvIjpmYWxzZSwiZCI6IjhjMWViMmEzLTM2MzMtNDU0Ni1iNmIwLWI5NzRhYmJiZjUwNyIsImlhdCI6MTU5MzE4NDU3Mn0.Mv321mCUh9ZxPDxhuBZhfXzbmAECZqMYEaKE-gkQ_Bg
+
+            token:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2byI6dHJ1ZSwiYW8iOnRydWUsImQiOiI4YzFlYjJhMy0zNjMzLTQ1NDYtYjZiMC1iOTc0YWJiYmY1MDciLCJpYXQiOjE1OTMxODQyNzd9.xdp0oJ7Da0r_4cLNkYTuRkZ8_gWVItgPddYrm7zKyKY"
+          });
+        }
+      })();
+      return () => {
+        if (globalCallObject) {
+          globalCallObject.leave();
+        }
+      };
+    },
+    [globalCallObject]
+  );
 
   // store media objects for global
-  useEffect(() => {
-    if (!globalCallObject) return;
-    const cleanUpEvents = handleParticipantEvents(
-      globalCallObject,
-      setGlobalParticipantTracks
-    );
-    return () => {
-      cleanUpEvents();
-    };
-  }, [globalCallObject]);
+  useEffect(
+    () => {
+      if (!globalCallObject) return;
+      const cleanUpEvents = handleParticipantEvents(
+        globalCallObject,
+        setGlobalParticipantTracks
+      );
+      return () => {
+        cleanUpEvents();
+      };
+    },
+    [globalCallObject]
+  );
 
   // store media objects for local
-  useEffect(() => {
-    if (!localCallObject) return;
-    const cleanUpEvents = handleParticipantEvents(
-      localCallObject,
-      setLocalParticipantTracks
-    );
-    return () => {
-      cleanUpEvents();
-    };
-  }, [localCallObject]);
+  useEffect(
+    () => {
+      if (!localCallObject) return;
+      const cleanUpEvents = handleParticipantEvents(
+        localCallObject,
+        setLocalParticipantTracks
+      );
+      return () => {
+        cleanUpEvents();
+      };
+    },
+    [localCallObject]
+  );
 
   // function to handle participant updates
   function handleParticipantEvents(callObject, setParticipants, note) {
     const participantEvents = [
       "participant-joined",
       "participant-updated",
-      "participant-left",
+      "participant-left"
     ];
     function handleNewParticipantState(event) {
       setParticipants({ ...callObject.participants() });
@@ -109,7 +123,7 @@ function App() {
       globalCallObject.leave();
       if (localCallObject) {
         await localCallObject.join({
-          url: "https://example-embryo.daily.co/local",
+          url: "https://example-embryo.daily.co/local"
         });
       }
       setJoinedLocal(true);
@@ -136,7 +150,7 @@ function App() {
           />
         );
       })}
-      <iframe id="global-call-iframe"></iframe>
+      <iframe id="global-call-iframe" />
     </div>
   );
 }
